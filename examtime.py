@@ -22,10 +22,39 @@
 #  
 #  
 
+import sqlite3, logging
+from datetime import date
 
+def init():
+	global rlog, conn, c, supstack
+    rlog = logging.getLogger("examtime")
+    rlog.setLevel(logging.DEBUG)
+    rlogch = logging.StreamHandler()
+    rlogch.setLevel(logging.DEBUG)
+    rlogfm =  logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    rlogch.setFormatter(rlogfm)
+    rlog.addHandler(rlogch)
+    rlogfh = logging.FileHandler('examtime.log')
+    rlogfh.setFormatter(rlogfm)
+    rlog.addHandler(rlogfh)
+    rlog.info("Initializing SQLite database connection")
+    conn = sqlite3.connect('examtime.sqlite')
+    c = conn.cursor()
+    supstack = []
+
+def install():
+    global rlog, c
+    rlog.info("Performing initial queries")
+    c.execute("CREATE TABLE IF NOT EXISTS lessons (schoolhour integer, subject text, teacher text)")
+    c.execute("CREATE TABLE IF NOT EXISTS dayevents (year integer, month integer, day integer, target text)")
+    c.execute("CREATE TABLE IF NOT EXISTS subjects (id text PRIMARY KEY)")
+    c.execute("CREATE TABLE IF NOT EXISTS teachers (id text PRIMARY KEY)")
+    c.execute("CREATE TABLE IF NOT EXISTS supress (subject text, year integer, month integer, day integer)")
 
 def main():
-	
+	init()
+	install()
+	deinit()
 	return 0
 
 if __name__ == '__main__':
