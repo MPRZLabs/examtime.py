@@ -26,7 +26,7 @@ import sqlite3, logging
 from datetime import date
 
 def init():
-	global rlog, conn, c, supstack
+    global rlog, conn, c, supstack
     rlog = logging.getLogger("examtime")
     rlog.setLevel(logging.DEBUG)
     rlogch = logging.StreamHandler()
@@ -50,13 +50,19 @@ def install():
     c.execute("CREATE TABLE IF NOT EXISTS subjects (id text PRIMARY KEY)")
     c.execute("CREATE TABLE IF NOT EXISTS teachers (id text PRIMARY KEY)")
     c.execute("CREATE TABLE IF NOT EXISTS supress (subject text, year integer, month integer, day integer)")
+    
+def deinit():
+    global rlog, conn
+    rlog.info("Closing SQLite database connection")
+    conn.commit()
+    conn.close()
 
 def main():
-	init()
-	install()
-	deinit()
-	return 0
+    init()
+    install()
+    deinit()
+    return 0
 
 if __name__ == '__main__':
-	main()
+    main()
 
